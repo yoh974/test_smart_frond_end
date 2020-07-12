@@ -1,72 +1,136 @@
 <template>
-    <div>
-        <table id="artworks-table">
-            <tr>
-                <th>Titre</th>
-                <th>Nom</th>
-                <th>Prénom</th>
-                <th>Editeur</th>
-                <th>Format livre</th>
-                <th>Type</th>
-                <th>Section</th>
-                <th>Etagère</th>
-                <th>Rangée</th>
-            </tr>
-            <tr
-                    :artwork="artwork"
-                    :key="artwork.id"
-                    v-for="artwork in artworks"
-            >
-                <td>{{artwork.title}}</td>
-                <td>{{artwork.name}}</td>
-                <td>{{artwork.firstname}}</td>
-                <td>{{artwork.editor}}</td>
-                <td>{{artwork.bookFormat}}</td>
-                <td>{{artwork.type}}</td>
-                <td>{{artwork.section}}</td>
-                <td>{{artwork.shelf}}</td>
-                <td>{{artwork.row}}</td>
-            </tr>
-
-        </table>
+    <div class="container is-fluid">
+        <vuetable ref="vuetable"
+                  :api-mode="false"
+                  :data="artworks"
+                  :fields="fields"
+        >
+            <div slot="actions" slot-scope="props">
+                <!--<button
+                        class="ui small button"
+                        @click="onActionClicked('edit-item', props.rowData)"
+                >
+                    <i class="edit icon"></i>
+                </button>-->
+                <b-button
+                        class="b-edit"
+                        icon-right="table-edit"
+                        @click="onActionClicked('edit-item', props.rowData)"
+                />
+                <b-button type="is-danger"
+                          icon-right="delete"
+                          @click="onActionClicked('delete-item', props.rowData)"
+                />
+            </div>
+        </vuetable>
 
     </div>
 </template>
 
 <script>
+
+    import Vuetable from 'vuetable-2'
+    import FieldsDef from "../FieldsDef.js";
+    import _ from "lodash";
+
     export default {
         name: "Listing",
-        props:['artworks'],
+        props: ['artworks'],
+        components: {
+            Vuetable
+        },
+        data() {
+            return {
+                fields: FieldsDef,
+                perPage: 3,
+                art: null,
+                columns: [
+                    {
+                        field: 'title',
+                        label: 'Titre'
+                    },
+                    {
+                        field: 'name',
+                        label: 'Nom',
+                    },
+                    {
+                        field: 'firstname',
+                        label: 'Prénom',
+                    },
+                    {
+                        field: 'editor',
+                        label: 'Editeur',
+                    },
+                    {
+                        field: 'bookFormat',
+                        label: 'Format livre',
+                    },
+                    {
+                        field: 'type',
+                        label: 'Type',
+                    },
+                    {
+                        field: 'section',
+                        label: 'Section',
+                    },
+                    {
+                        field: 'shelf',
+                        label: 'Etagère',
+                    },
+                    {
+                        field: 'row',
+                        label: 'Rangée',
+                    },
+                ]
+            }
+        },
+        methods: {
+            edit: function (row) {
+                console.log(row)
+            },
+            onActionClicked(action, data) {
+                this.$emit('edit',data)
+                console.log("slot actions: on-click", data.id);
+            },
+            dataManager(sortOrder, pagination) {
+                if (this.data.length < 1) return;
+
+                let local = this.data;
+
+                // sortOrder can be empty, so we have to check for that as well
+                if (sortOrder.length > 0) {
+                    console.log("orderBy:", sortOrder[0].sortField, sortOrder[0].direction);
+                    local = _.orderBy(
+                        local,
+                        sortOrder[0].sortField,
+                        sortOrder[0].direction
+                    );
+                }
+
+                pagination = this.$refs.vuetable.makePagination(
+                    local.length,
+                    this.perPage
+                );
+                console.log('pagination:', pagination)
+                let from = pagination.from - 1;
+                let to = from + this.perPage;
+
+                return {
+                    pagination: pagination,
+                    data: _.slice(local, from, to)
+                };
+            },
+        },
+        watch: {
+            artworks() {
+                this.$refs.vuetable.refresh();
+            }
+        },
     }
 </script>
 
 <style scoped>
-    #artworks-table {
-        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-        border-collapse: collapse;
-        width: 100%;
-        margin-top: 3em;
-        margin-bottom: 3em;
-    }
-
-    #artworks-table td, #artworks-table th {
-        border: 1px solid #ddd;
-        padding: 8px;
-    }
-
-    #artworks-table tr:nth-child(even) {
-        background-color: #f2f2f2;
-    }
-
-    #artworks-table tr:hover {
-        background-color: #ddd;
-    }
-
-    #artworks-table th {
-        padding-top: 12px;
-        padding-bottom: 12px;
-        text-align: left;
-        background-color: #4CAF50;
-        color: white;
-    }
+.b-edit{
+    margin-right: 15px;
+}
 </style>
