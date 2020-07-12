@@ -1,7 +1,7 @@
 <template>
     <div id="app">
 
-        <div>
+        <div class="container">
             <div class="custom-select" style="width:200px;">
                 <select v-on:change="getPageResult(active_page,$event.target.value)">
                     <option value="10">10</option>
