@@ -91,7 +91,9 @@
         },
         methods: {
             getPageResult: function (page, itemsPerPage = 30) {
-                axiosInstance.get(`/libraries?page=${page}&itemsPerPage=${itemsPerPage}`)
+                axiosInstance.get(
+                    `/libraries?page=${page}&itemsPerPage=${itemsPerPage}`,
+                    {headers: {'Content-Type': 'application/ld+json'}},)
                     .then(response => {
                         this.artworks = response["data"]["hydra:member"]
                         this.nb_total_items = response["data"]["hydra:totalItems"]
@@ -116,7 +118,7 @@
                     this.getPageResult(page)
                 }
             },
-            cardModal(name = 'test', title = 'vide') {
+            cardModal(artwork) {
                 this.$buefy.modal.open({
                     parent: this,
                     component: ModalForm,
@@ -124,17 +126,15 @@
                     customClass: 'custom-class custom-class-2',
                     trapFocus: true,
                     props: {
-                        "name": name,
-                        "title": title,
-                        "axiosInstace": this.axiosInstace
+                        "artwork": artwork,
+                        "axiosInstance": axiosInstance
                     },
 
 
             })
             },
             editBook: function (e) {
-                console.log("ok")
-                this.cardModal(e.name,e.title)
+                this.cardModal(e)
             }
         },
         mounted() {
