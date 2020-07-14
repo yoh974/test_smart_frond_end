@@ -37,4 +37,10 @@ HTML uniforme
 # vuetable-2
 
 Pour implémenté un tableau stylisé j'ai utilisé vuetable-2 car la configuration avec buefy ne me permettait de rafraichir les données
-reçu de l'API 
+reçu de l'API
+
+#Amélioration
+
+On peut implémenter le tri des colonnes en plus de la recherche, rajouter un page de login admin
+pour restreindre l'utilisation des actions supprimer et editer.
+ 
