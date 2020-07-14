@@ -1,11 +1,13 @@
 <template>
     <div>
         <nav class="pagination is-medium">
-            <a role="button" href="#" aria-label="Page 0." class="pagination-link pagination-previous"
-               disabled="disabled">
+            <a role="button" :aria-label="'Page '+ activePage - 1" class="pagination-link pagination-previous"
+               :disabled="activePage === 1" @click="$emit('page-change',activePage-1)">
                 <span class="icon" aria-hidden="true"><i class="mdi mdi-chevron-left mdi-24px"></i></span>
             </a>
-            <a role="button" href="#" aria-label="Page 2." class="pagination-link pagination-next">
+            <a role="button" :aria-label="'Page '+ activePage + 1"
+               class="pagination-link pagination-next" @click="$emit('page-change',activePage+1)"
+               :disabled="activePage === nb_total_pages">
                 <span class="icon" aria-hidden="true"><i class="mdi mdi-chevron-right mdi-24px"></i></span>
             </a>
             <ul class="pagination-list">
@@ -114,7 +116,7 @@
                                         )
                                         break
                                 }
-                            }else{
+                            } else {
                                 this.pageNumbers.push(this.activePage - 1, this.activePage, this.activePage + 1)
                                 this.firstElipse = true
                                 this.lastElipse = true
