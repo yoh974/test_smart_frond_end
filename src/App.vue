@@ -1,23 +1,31 @@
 <template>
     <div id="app">
-        <div class="container is-fluid">
+        <div class="container is-fluid" style="justify-content: center;align-items: center">
             <h1>Liste des ouvrages de la biliothèque</h1>
             <div>
-                <b-select id="nb_page"
-                          v-on:change.native="getPageResult(active_page,$event.target.value)"
-                          placeholder="Nombre d'items par page"
-                          v-model="SelectedPerPage"
+                <Search
+                        v-on:search="searchArtwork"
                 >
-                    <option
-                            v-for="option in item_per_pages"
-                            :value="option"
-                            :key="option">
-                        {{ option }}
-                    </option>
-                </b-select>
-
-
-                <div>Nombre total d'oeuvres : {{nb_total_items}}</div>
+                </Search>
+                <div style="width: 160px;">
+                    <b-field label="Par page" label-position="inside">
+                        <b-select id="nb_page"
+                                  v-on:change.native="getPageResult(active_page,$event.target.value,activeSearch)"
+                                  placeholder="Nombre d'items par page"
+                                  v-model="active_items_per_page"
+                        >
+                            <option
+                                    v-for="option in item_per_pages"
+                                    :value="option"
+                                    :key="option">
+                                {{ option }}
+                            </option>
+                        </b-select>
+                    </b-field>
+                </div>
+                <b-field label="Allez à la page" label-position="inside">
+                    <b-input name="go-to-page" type="text" custom-class="to-page"></b-input>
+                </b-field>
             </div>
 
 
@@ -40,16 +48,6 @@
                     aria-page-label="Page"
                     aria-current-label="Current page">
             </b-pagination>
-            <!--            <ul class="pagination">
-                            <li class="page-item"><span class="page-link">Previous</span></li>
-                            <li class="page-item"><label> Page
-                                <input id="page_number" type="number" class="page-link" v-on:keydown="keyDownControl"
-                                       :value="active_page">
-                                / {{nb_total_pages}}
-                            </label>
-                            </li>
-                            <li class="page-item"><span class="page-link">Next</span></li>
-                        </ul>-->
 
         </div>
 
@@ -61,6 +59,7 @@
     import Listing from './components/Listing.vue'
     import Vue from 'vue'
     import ModalForm from "@/components/ModalForm";
+    import Search from "@/components/Search";
     import Buefy from 'buefy'
     import 'buefy/dist/buefy.css'
 
@@ -74,8 +73,7 @@
     });
 
     let defaultPage = 1
-    let defaultItemsPerPage = 30
-
+    let defaultItemsPerPage = 10
 
 
     export default {
@@ -84,25 +82,28 @@
         components: {
             // eslint-disable-next-line vue/no-unused-components
             ModalForm,
-            Listing
+            Listing,
+            Search
         },
         data() {
             return {
                 artworks: null,
                 nb_total_items: null,
                 active_page: null,
-                active_items_per_page: null,
+                active_items_per_page: defaultItemsPerPage.toString(),
                 nb_total_pages: null,
+                activeSearch: "",
                 item_per_pages: [
                     "10", "20", "30", "50", "100", "200"
                 ],
-                selectedPerPage:null
+
             }
         },
         methods: {
-            getPageResult: function (page, itemsPerPage = 30) {
+            getPageResult: function (page, itemsPerPage = 30,search = "") {
+                search += (search !== "") ? "&" : ""
                 axiosInstance.get(
-                    `/libraries?page=${page}&itemsPerPage=${itemsPerPage}`,
+                    `/libraries?${search}page=${page}&itemsPerPage=${itemsPerPage}`,
                     {headers: {'Content-Type': 'application/ld+json'}},)
                     .then(response => {
                         this.artworks = response["data"]["hydra:member"]
@@ -112,6 +113,7 @@
                     })
                 this.active_page = page
                 this.active_items_per_page = itemsPerPage
+                this.activeSearch = search
             },
             keyDownControl: function (event) {
                 if (event.key === "Enter") {
@@ -154,6 +156,9 @@
                 }).catch(function (error) {
                     alert(error);
                 });
+            },
+            searchArtwork: function (searchString) {
+                this.getPageResult(1,this.active_items_per_page,searchString)
             }
         },
         mounted() {
@@ -161,10 +166,15 @@
                 this.getPageResult(defaultPage, defaultItemsPerPage)
 
             }
-            document.querySelector("#app > div > nav > ul > li > a").addEventListener("click", () => {
-                console.log(this)
-            })
-
+            console.log(document.querySelectorAll(".pagination-list .pagination-link"))
+            var paginationsElements = document.getElementsByClassName("pagination-link")
+            paginationsElements.forEach(
+                element => {
+                    element.addEventListener("click", () => {
+                        console.log("ok")
+                    })
+                    console.log(element)
+                })
 
         },
     }
@@ -180,40 +190,15 @@
         color: #2c3e50;
         margin-top: 60px;
     }
-    .table{
+
+    .table {
         width: 100%;
         margin: 50px auto 50px auto;
     }
 
-    ul.pagination {
-        display: inline-block;
-        padding: 0;
-        margin: 0;
-    }
-
-    ul.pagination li {
-        display: inline;
-    }
-
-    ul.pagination li input {
-        display: inline;
-    }
-
-    ul.pagination li span {
-        color: black;
-        float: left;
-        padding: 8px 16px;
-        text-decoration: none;
-    }
-
-    ul.pagination li span.active {
-        background-color: #4CAF50;
-        color: white;
-    }
-
-    ul.pagination li span:hover:not(.active) {
-        background-color: #ddd;
-        cursor: pointer;
+    .to-page {
+        width: 100px;
+        margin-top: 35px;
     }
 
 </style>
