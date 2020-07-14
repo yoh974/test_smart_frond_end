@@ -55,6 +55,7 @@
         },
         methods: {
             updatePages: function () {
+                //shown all element if number of pages < 10
                 if (this.nb_total_pages < 10) {
 
                     for (let i = 2; i < this.nb_total_pages; i++) {
@@ -62,12 +63,14 @@
                     }
                 } else {
                     this.pageNumbers = []
+                    //add nex element if active page =1
                     if (this.activePage === 1) {
                         this.pageNumbers.push(2)
                         this.lastElipse = true
                         this.firstElipse = false
                     } else {
                         if (this.activePage < 5) {
+                            //until page 5 add next apge button
                             switch (this.activePage) {
                                 case 2 :
                                     this.pageNumbers.push(2, 3)
@@ -81,6 +84,7 @@
                             }
                             this.firstElipse = false
                         } else {
+                            //for the last five pages show consecutive pages
                             if (this.activePage > this.nb_total_pages - 5) {
                                 this.lastElipse = false
                                 this.firstElipse = true
@@ -117,6 +121,7 @@
                                         break
                                 }
                             } else {
+                                //show previous page and next page + show Elipse
                                 this.pageNumbers.push(this.activePage - 1, this.activePage, this.activePage + 1)
                                 this.firstElipse = true
                                 this.lastElipse = true

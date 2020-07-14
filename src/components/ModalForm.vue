@@ -9,7 +9,7 @@
                         type="text"
                         :value="art.title"
                         placeholder="Le titre"
-                        name="title"
+                        name="edit-title"
                         required>
                 </b-input>
             </b-field>
@@ -19,7 +19,7 @@
                         type="text"
                         :value="art.name"
                         placeholder="Nom"
-                        name="name"
+                        name="edit-name"
                 >
                 </b-input>
             </b-field>
@@ -28,7 +28,7 @@
                     type="text"
                     :value="art.firstname"
                     placeholder="Prénom"
-                    name="firstname"
+                    name="edit-firstname"
             >
             </b-input>
         </b-field>
@@ -38,7 +38,7 @@
                         type="text"
                         :value="art.editor"
                         placeholder="Editor"
-                        name="editor"
+                        name="edit-editor"
                 >
                 </b-input>
             </b-field>
@@ -47,13 +47,13 @@
                         type="text"
                         :value="art.bookFormat"
                         placeholder="Format livre"
-                        name="bookFormat"
+                        name="edit-bookFormat"
                 >
                 </b-input>
             </b-field>
             <b-field label="Type">
                 <b-select v-model="selectedTypeOption"
-                          name="type"
+                          name="edit-type"
                           placeholder="Le Type d'ouvrage">
                     <option
                             v-for="option in typeArtwork"
@@ -65,7 +65,7 @@
             </b-field>
             <b-field label="Section">
                 <b-select v-model="selectedSectionOption"
-                          name="section"
+                          name="edit-section"
                           placeholder="La section">
                     <option
                             v-for="option in sectionArtwork"
@@ -77,7 +77,7 @@
             </b-field>
             <b-field label="Etagère">
                 <b-select v-model="selectedShelfOption"
-                          name="shelf"
+                          name="edit-shelf"
                           placeholder="L'étagère">
                     <option
                             v-for="option in shelfArtwork"
@@ -89,7 +89,7 @@
             </b-field>
             <b-field label="Rangée">
                 <b-select v-model="selectedRowOption"
-                          name="row"
+                          name="edit-row"
                           placeholder="La rangée">
                     <option
                             v-for="option in rowArtwork"
@@ -164,15 +164,17 @@
         },
         methods: {
             patchArtwork() {
-                this.art.name = document.querySelector("input[name='name']").value
-                this.art.title = document.querySelector("input[name='title']").value
-                this.art.firstname = document.querySelector("input[name='firstname']").value
-                this.art.editor = document.querySelector("input[name='editor']").value
-                this.art.bookFormat = document.querySelector("input[name='bookFormat']").value
-                this.art.type = document.querySelector("select[name='type']").value
-                this.art.section = document.querySelector("select[name='section']").value
-                this.art.shelf = document.querySelector("select[name='shelf']").value
-                this.art.row = document.querySelector("select[name='row']").value
+                //get all values from the form
+                this.art.name = document.querySelector("input[name='edit-name']").value
+                this.art.title = document.querySelector("input[name='edit-title']").value
+                this.art.firstname = document.querySelector("input[name='edit-firstname']").value
+                this.art.editor = document.querySelector("input[name='edit-editor']").value
+                this.art.bookFormat = document.querySelector("input[name='edit-bookFormat']").value
+                this.art.type = document.querySelector("select[name='edit-type']").value
+                this.art.section = document.querySelector("select[name='edit-section']").value
+                this.art.shelf = document.querySelector("select[name='edit-shelf']").value
+                this.art.row = document.querySelector("select[name='edit-row']").value
+                //Call path method
                 this.axiosInstance.patch(
                     `/libraries/${this.art.id}`,
                     this.art,
@@ -185,11 +187,11 @@
                             message:'Changement pris en compte',
                             type: 'is-success'
                         })
-
                     }
                 }).catch(function (error) {
                     alert(error);
                 });
+                //close modal windows
                 this.$parent.close()
             }
         }

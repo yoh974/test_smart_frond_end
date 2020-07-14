@@ -7,7 +7,7 @@
                         v-on:search="searchArtwork"
                 >
                 </Search>
-                <div style="width: 160px;">
+                <div style="width: 160px; margin-bottom: 35px;">
                     <b-field label="Par page" label-position="inside">
                         <b-select id="nb_page"
                                   v-on:change.native="getPageResult(active_page,$event.target.value,activeSearch)"
@@ -23,18 +23,13 @@
                         </b-select>
                     </b-field>
                 </div>
-                <!--                <b-field label="Allez à la page" label-position="inside">
-                                    <b-input
-                                            name="go-to-page"
-                                            type="number"
-                                            custom-class="to-page"
-                                            v-on:keydown.native="keyDownControl"
-                                            v-model="active_page"
-                                    >
-                                    </b-input>
-                                </b-field>-->
             </div>
 
+            <Pagination
+                    :active-page="active_page"
+                    :nb_total_pages="nb_total_pages"
+                    v-on:page-change="getPageResult($event,active_items_per_page,activeSearch)"
+            ></Pagination>
 
             <Listing
                     :artworks="artworks"
@@ -62,14 +57,11 @@
     import Pagination from "@/components/Pagination";
     import Buefy from 'buefy'
     import 'buefy/dist/buefy.css'
-
-    Vue.use(Buefy)
     import axios from "axios"
-
+    Vue.use(Buefy)
 
     let axiosInstance = axios.create({
         baseURL: 'http://localhost:8000/api',
-        /* other custom settings */
     });
 
     let defaultPage = 1
@@ -102,6 +94,7 @@
         },
         methods: {
             getPageResult: function (page, itemsPerPage = 30, search = "") {
+                //add & caratere at the end of search to merge with api request
                 search += (search !== "") ? "&" : ""
                 axiosInstance.get(
                     `/libraries?${search}page=${page}&itemsPerPage=${itemsPerPage}`,
@@ -120,22 +113,8 @@
                 this.active_items_per_page = itemsPerPage
                 this.activeSearch = search
             },
-            keyDownControl: function (event) {
-                if (event.key === "Enter") {
-                    //control the value of input
-                    var page = event.target.value
-                    if (page > this.nb_total_pages) {
-                        page = this.nb_total_pages
-
-                    }
-                    if (page < 1) {
-                        page = 1
-                    }
-
-                    this.getPageResult(page)
-                }
-            },
             editBook(artwork) {
+                //Open ModalForm component
                 this.$buefy.modal.open({
                     parent: this,
                     component: ModalForm,
@@ -146,15 +125,12 @@
                         "artwork": artwork,
                         "axiosInstance": axiosInstance
                     },
-
-
                 })
             },
             deleteBook(artwork) {
                 axiosInstance.delete(
                     `/libraries/${artwork.id}`
                 ).then(response => {
-                    //console.log(response)
                     if (response["status"] !== 204) {
                         alert("erreur API")
                     }
@@ -163,6 +139,7 @@
                 });
             },
             searchArtwork: function (searchString) {
+                //launch search
                 this.getPageResult(1, this.active_items_per_page, searchString)
             }
         },
@@ -171,16 +148,6 @@
                 this.getPageResult(defaultPage, defaultItemsPerPage)
 
             }
-            console.log(document.querySelectorAll(".pagination-list .pagination-link"))
-            var paginationsElements = document.getElementsByClassName("pagination-link")
-            paginationsElements.forEach(
-                element => {
-                    element.addEventListener("click", () => {
-                        console.log("ok")
-                    })
-                    console.log(element)
-                })
-
         },
     }
 
@@ -201,9 +168,5 @@
         margin: 50px auto 50px auto;
     }
 
-    .to-page {
-        width: 100px;
-        margin-top: 35px;
-    }
 
 </style>
