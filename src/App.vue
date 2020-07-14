@@ -3,8 +3,11 @@
         <div class="container is-fluid">
             <h1>Liste des ouvrages de la biliothèque</h1>
             <div>
-                <b-select id="nb_page" v-on:change.native="getPageResult(active_page,$event.target.value)"
-                          placeholder="Nombre d'items par page">
+                <b-select id="nb_page"
+                          v-on:change.native="getPageResult(active_page,$event.target.value)"
+                          placeholder="Nombre d'items par page"
+                          v-model="SelectedPerPage"
+                >
                     <option
                             v-for="option in item_per_pages"
                             :value="option"
@@ -21,17 +24,32 @@
             <Listing
                     :artworks="artworks"
                     v-on:edit="editBook"
+                    v-on:delete="deleteBook"
             />
-            <ul class="pagination">
-                <li class="page-item"><span class="page-link">Previous</span></li>
-                <li class="page-item"><label> Page
-                    <input id="page_number" type="number" class="page-link" v-on:keydown="keyDownControl"
-                           :value="active_page">
-                    / {{nb_total_pages}}
-                </label>
-                </li>
-                <li class="page-item"><span class="page-link">Next</span></li>
-            </ul>
+            <b-pagination
+                    :total="nb_total_pages"
+                    :current.sync="active_page"
+                    :size="'is-medium'"
+                    :simple="false"
+                    :rounded="false"
+                    :per-page="active_items_per_page"
+                    :icon-prev="'chevron-left'"
+                    :icon-next="'chevron-right'"
+                    aria-next-label="Page suivante"
+                    aria-previous-label="Page précédente"
+                    aria-page-label="Page"
+                    aria-current-label="Current page">
+            </b-pagination>
+            <!--            <ul class="pagination">
+                            <li class="page-item"><span class="page-link">Previous</span></li>
+                            <li class="page-item"><label> Page
+                                <input id="page_number" type="number" class="page-link" v-on:keydown="keyDownControl"
+                                       :value="active_page">
+                                / {{nb_total_pages}}
+                            </label>
+                            </li>
+                            <li class="page-item"><span class="page-link">Next</span></li>
+                        </ul>-->
 
         </div>
 
@@ -57,6 +75,9 @@
 
     let defaultPage = 1
     let defaultItemsPerPage = 30
+
+
+
     export default {
 
         name: 'App',
@@ -75,18 +96,7 @@
                 item_per_pages: [
                     "10", "20", "30", "50", "100", "200"
                 ],
-                isComponentModalActive: false,
-                formProps: {
-                    title: null,
-                    name: null,
-                    firstname: null,
-                    editor: null,
-                    bookFormat: null,
-                    type: null,
-                    section: null,
-                    shelf: null,
-                    row: null
-                }
+                selectedPerPage:null
             }
         },
         methods: {
@@ -118,7 +128,7 @@
                     this.getPageResult(page)
                 }
             },
-            cardModal(artwork) {
+            editBook(artwork) {
                 this.$buefy.modal.open({
                     parent: this,
                     component: ModalForm,
@@ -131,10 +141,19 @@
                     },
 
 
-            })
+                })
             },
-            editBook: function (e) {
-                this.cardModal(e)
+            deleteBook(artwork) {
+                axiosInstance.delete(
+                    `/libraries/${artwork.id}`
+                ).then(response => {
+                    //console.log(response)
+                    if (response["status"] !== 204) {
+                        alert("erreur API")
+                    }
+                }).catch(function (error) {
+                    alert(error);
+                });
             }
         },
         mounted() {
@@ -142,44 +161,13 @@
                 this.getPageResult(defaultPage, defaultItemsPerPage)
 
             }
+            document.querySelector("#app > div > nav > ul > li > a").addEventListener("click", () => {
+                console.log(this)
+            })
+
 
         },
     }
-    /*const ModalForm = {
-        props: ["title","name","firstname","editor","bookFormat","type","section","shelf","row"],
-        template: `
-            <form action="">
-                <div class="modal-card" style="width: auto">
-                    <header class="modal-card-head">
-                        <p class="modal-card-title">Edit</p>
-                    </header>
-                    <section class="modal-card-body">
-                        <b-field label="Titre">
-                            <b-input
-                                    type="text"
-                                    :value="title"
-                                    placeholder="Le titre"
-                                    required>
-                            </b-input>
-                        </b-field>
-
-                        <b-field label="Nom">
-                            <b-input
-                                    type="text"
-                                    :value="name"
-                                    placeholder="Nom"
-                            >
-                            </b-input>
-                        </b-field>
-                    </section>
-                    <footer class="modal-card-foot">
-                        <button class="button" type="button" @click="$parent.close()">Fermer</button>
-                        <button class="button is-primary">Enregistrer</button>
-                    </footer>
-                </div>
-            </form>
-        `
-    }*/
 
 </script>
 
@@ -191,6 +179,10 @@
         text-align: center;
         color: #2c3e50;
         margin-top: 60px;
+    }
+    .table{
+        width: 100%;
+        margin: 50px auto 50px auto;
     }
 
     ul.pagination {

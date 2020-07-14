@@ -180,6 +180,12 @@
                 ).then(response => {
                     if (response["status"] !== 200) {
                         alert("erreur API")
+                    }else{
+                        this.$buefy.toast.open({
+                            message:'Changement pris en compte',
+                            type: 'is-success'
+                        })
+
                     }
                 }).catch(function (error) {
                     alert(error);
