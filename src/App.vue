@@ -59,9 +59,9 @@
     import 'buefy/dist/buefy.css'
     import axios from "axios"
     Vue.use(Buefy)
-
+    const BACKEND_URL = `${process.env.VUE_APP_API_URL}`;
     let axiosInstance = axios.create({
-        baseURL: 'http://localhost:8000/api',
+        baseURL: BACKEND_URL,
     });
 
     let defaultPage = 1
