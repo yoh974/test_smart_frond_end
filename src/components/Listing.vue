@@ -41,16 +41,14 @@
             }
         },
         methods: {
-            edit: function (row) {
-                console.log(row)
-            },
             onActionClicked(action, data) {
                 if (action === "edit-item") {
                     this.$emit('edit', data)
-                }else {
+                } else {
                     this.confirm(data)
                 }
             },
+            //confirm action
             confirm(data) {
                 this.$buefy.dialog.confirm({
                     message: `Etes vous sûr de vouloir supprimer ${data.title} ?`,
@@ -58,7 +56,7 @@
                         this.$emit('delete', data)
                         this.$buefy.toast.open({
                             message: 'Ligne supprimée',
-                            type: "is-sucess"
+                            type: 'is-sucess'
                         })
                     }
                 })

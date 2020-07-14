@@ -24,14 +24,14 @@
                 </b-input>
             </b-field>
             <b-field label="Prénom">
-            <b-input
-                    type="text"
-                    :value="art.firstname"
-                    placeholder="Prénom"
-                    name="edit-firstname"
-            >
-            </b-input>
-        </b-field>
+                <b-input
+                        type="text"
+                        :value="art.firstname"
+                        placeholder="Prénom"
+                        name="edit-firstname"
+                >
+                </b-input>
+            </b-field>
 
             <b-field label="Editor">
                 <b-input
@@ -114,7 +114,7 @@
         data() {
             return {
                 art: this.artwork,
-                typeArtwork:[
+                typeArtwork: [
                     "Livre(s)",
                     "Revue (s)",
                     "Compact-Disc",
@@ -129,7 +129,7 @@
                     "Cassette(s) audio",
                     "Console et périphériques jeux vidéos",
                 ],
-                sectionArtwork:[
+                sectionArtwork: [
                     "Jeunesse",
                     "Adulte",
                     "Discothèque",
@@ -137,7 +137,7 @@
                     "DVD jeunesse",
                     "Supports d'animation"
                 ],
-                shelfArtwork:[
+                shelfArtwork: [
                     "A",
                     "B",
                     "C",
@@ -147,7 +147,7 @@
                     "G",
                     "H"
                 ],
-                rowArtwork:[
+                rowArtwork: [
                     "1",
                     "2",
                     "3",
@@ -155,10 +155,10 @@
                     "5",
                     "6"
                 ],
-                selectedTypeOption:this.artwork.type,
-                selectedSectionOption:this.artwork.section,
-                selectedShelfOption:this.artwork.shelf,
-                selectedRowOption:this.artwork.row
+                selectedTypeOption: this.artwork.type,
+                selectedSectionOption: this.artwork.section,
+                selectedShelfOption: this.artwork.shelf,
+                selectedRowOption: this.artwork.row
 
             }
         },
@@ -182,9 +182,9 @@
                 ).then(response => {
                     if (response["status"] !== 200) {
                         alert("erreur API")
-                    }else{
+                    } else {
                         this.$buefy.toast.open({
-                            message:'Changement pris en compte',
+                            message: 'Changement pris en compte',
                             type: 'is-success'
                         })
                     }

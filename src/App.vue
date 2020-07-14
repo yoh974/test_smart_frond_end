@@ -168,5 +168,9 @@
         margin: 50px auto 50px auto;
     }
 
+    h1{
+        font-size: 3em;
+        font-weight: 900;
+    }
 
 </style>

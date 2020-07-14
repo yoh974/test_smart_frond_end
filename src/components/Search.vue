@@ -83,12 +83,12 @@
             </p>
         </b-field>
     </div>
-
 </template>
 
 <script>
     function encodeForUrl(s) {
-        return s.replace("(","%28").replace(")","%29");
+        //replace () to ensure API compatibility
+        return s.replace("(", "%28").replace(")", "%29");
     }
 
     export default {
@@ -155,15 +155,15 @@
                     "row": document.querySelector("select[name='row']").value
                 }
                 var searchString = ""
-
-
+                //build string for API request
                 for (var key in arrSearch) {
                     if (arrSearch[key] !== "") {
                         searchString += (searchString === "") ? "" : "&"
                         searchString += key + "=" + encodeForUrl(arrSearch[key])
                     }
                 }
-                this.$emit("search",searchString)
+                //send event to Parent
+                this.$emit("search", searchString)
 
             }
         }

@@ -6,7 +6,7 @@ export default [
     },
     {
         name: 'title',
-        title: 'Titre <i class="mdi mdi-sort"></i>',
+        title: 'Titre',
         sortField: 'title'
     },
     {
