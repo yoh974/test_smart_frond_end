@@ -23,9 +23,16 @@
                         </b-select>
                     </b-field>
                 </div>
-                <b-field label="Allez à la page" label-position="inside">
-                    <b-input name="go-to-page" type="text" custom-class="to-page"></b-input>
-                </b-field>
+                <!--                <b-field label="Allez à la page" label-position="inside">
+                                    <b-input
+                                            name="go-to-page"
+                                            type="number"
+                                            custom-class="to-page"
+                                            v-on:keydown.native="keyDownControl"
+                                            v-model="active_page"
+                                    >
+                                    </b-input>
+                                </b-field>-->
             </div>
 
 
@@ -34,20 +41,12 @@
                     v-on:edit="editBook"
                     v-on:delete="deleteBook"
             />
-            <b-pagination
-                    :total="nb_total_pages"
-                    :current.sync="active_page"
-                    :size="'is-medium'"
-                    :simple="false"
-                    :rounded="false"
-                    :per-page="active_items_per_page"
-                    :icon-prev="'chevron-left'"
-                    :icon-next="'chevron-right'"
-                    aria-next-label="Page suivante"
-                    aria-previous-label="Page précédente"
-                    aria-page-label="Page"
-                    aria-current-label="Current page">
-            </b-pagination>
+
+            <Pagination
+                    :active-page="active_page"
+                    :nb_total_pages="nb_total_pages"
+                    v-on:page-change="getPageResult($event,active_items_per_page,activeSearch)"
+            ></Pagination>
 
         </div>
 
@@ -60,6 +59,7 @@
     import Vue from 'vue'
     import ModalForm from "@/components/ModalForm";
     import Search from "@/components/Search";
+    import Pagination from "@/components/Pagination";
     import Buefy from 'buefy'
     import 'buefy/dist/buefy.css'
 
@@ -83,7 +83,8 @@
             // eslint-disable-next-line vue/no-unused-components
             ModalForm,
             Listing,
-            Search
+            Search,
+            Pagination
         },
         data() {
             return {
@@ -100,7 +101,7 @@
             }
         },
         methods: {
-            getPageResult: function (page, itemsPerPage = 30,search = "") {
+            getPageResult: function (page, itemsPerPage = 30, search = "") {
                 search += (search !== "") ? "&" : ""
                 axiosInstance.get(
                     `/libraries?${search}page=${page}&itemsPerPage=${itemsPerPage}`,
@@ -109,7 +110,11 @@
                         this.artworks = response["data"]["hydra:member"]
                         this.nb_total_items = response["data"]["hydra:totalItems"]
                         this.nb_total_pages = response["data"]["hydra:view"]["hydra:last"]
-                        this.nb_total_pages = Number(this.nb_total_pages.substr(this.nb_total_pages.indexOf("page=") + 5, this.nb_total_pages.length))
+                        this.nb_total_pages = Number(
+                            this.nb_total_pages.substr(
+                                this.nb_total_pages.indexOf("page=") + 5,
+                                this.nb_total_pages.length)
+                        )
                     })
                 this.active_page = page
                 this.active_items_per_page = itemsPerPage
@@ -158,7 +163,7 @@
                 });
             },
             searchArtwork: function (searchString) {
-                this.getPageResult(1,this.active_items_per_page,searchString)
+                this.getPageResult(1, this.active_items_per_page, searchString)
             }
         },
         mounted() {
